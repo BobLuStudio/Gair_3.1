@@ -133,13 +133,15 @@ void setup()
 
 }
 //****************************************************************************//
+uint16_t count = 0;
 
 void loop()
 {
-  if (Serial3.available() > 0)
-  {
-    fromremote();//get expect state data(state of remote)
-  }
+  if (fromremote()) //get expect state data(state of remote)
+    count = 0;
+  else
+    count++;
+
   while (modes[stopMode])
   {
     fpower = 0;
@@ -149,10 +151,15 @@ void loop()
     applypowers();
     fromremote();
   }
+  while(modes[landMode]||count>50000)
+  {
+    landrobot();
+    fromremote();
+  }
   while (modes[keepMode])
   {
     keeprobot();
-    fromremote();//get expect state data(state of remote)
+    fromremote();
   }
   realizestate();
 

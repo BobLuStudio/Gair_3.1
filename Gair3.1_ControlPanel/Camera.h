@@ -9,6 +9,10 @@ public:
 	{
 		setCameraId(cameraId);
 	}
+	~Camera()
+	{
+		vedio.release();
+	}
 	bool isOpen()
 	{
 		return vedio.isOpened();

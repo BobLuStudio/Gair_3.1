@@ -1,5 +1,4 @@
 
-uint8_t mode;
 bool mode1 = 0, mode2 = 0, mode3 = 0, mode4 = 0;
 float sensorx = 0, sensory = 0; //to correct the data.
 uint8_t tpower;
@@ -58,15 +57,19 @@ void update()
 
 void sendCommand()
 {
+  uint8_t mode=0;
 	if (mode4)mode |= 1 << 3; //land
 	else
 		mode &= ~(1 << 3);
+    
     if (mode3)mode |= 1<<2; //take off
 	else
 		mode &= ~(1 <<2);
+   
     if (mode2)mode |= 1<<1; //keep
 	else
 		mode &= ~(1 << 1);
+    
     if (mode1)mode |= 1; //stop
 	else
 		mode &= ~(1);

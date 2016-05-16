@@ -26,7 +26,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 	HANDLE getInfor = CreateThread(NULL, 0, GetInfor, NULL, 0, NULL), 
 		imProcessor = CreateThread(NULL, 0, ImProcessor, NULL, 0, NULL),
-		UIOutput; 
+		UIOutput = CreateThread(NULL, 0, UIProcessor, NULL, 0, NULL);
 
 	cam.getFrame(camFrame);
 	camFrame.copyTo(UI);
@@ -58,7 +58,9 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 					imshow("Gair UI-windows 3.2", UI);
 					if (waitKey(20) == 27)
 					{
-						printf("°´ÏÂESC¼ü£¡");
+						exitThread = 1; 
+						cam.~Camera();
+						Serial.~comPort();
 						return nRetCode;
 					}
 				}

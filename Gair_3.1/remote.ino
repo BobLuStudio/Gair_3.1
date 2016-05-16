@@ -1,10 +1,8 @@
 
 bool fromremote()
 {
-  char commandFromRemote[18];
-  uint8_t commandlength = 0;
-  commandlength = receiveCommandFromRemote(commandFromRemote);
-  if (commandlength == 11)
+  char commandFromRemote[11];
+  if (receiveCommandFromRemote(commandFromRemote))
   {
     uint8_t modeTest = (uint8_t)commandFromRemote[1];
     float rstateXTest = floatStructor(2, commandFromRemote);
@@ -19,38 +17,45 @@ bool fromremote()
       rstate[xAxis] = rstateZTest;
       tpower = rtpowerTest;
       decodeMode(modeTest, modes);
-      Serial.print(modeTest, BIN);
     }
     return 1;
   }
-  else
-  {
-    return 0;
-  }
+  return 0;
 }
 
 
-
-uint8_t receiveCommandFromRemote(char command[18])
+bool receiveCommandFromRemote(char command[11])
 {
-  int i = 1;
-  if (Serial3.available() > 0)
+  if (Serial3.available() > 11)
   {
     command[0] = Serial3.read();
-    while (Serial3.available() > 12 || command[0] != '$')
+    uint8_t serialCatch = Serial3.available();
+    while (serialCatch > 10 || command[0] != '$')
     {
       command[0] = Serial3.read();
+      serialCatch = Serial3.available();
+      if (serialCatch == 0)
+      {
+        if (command[0] != '$')
+          return 0;
+      }
     }
 
-    while (command[i - 1] != '&')
+    for (uint16_t c = 0;  serialCatch < 10; c++) //waiting for data
     {
-      while (Serial3.available() == 0)//waiting for next byte
+      serialCatch = Serial3.available();
+      if (c > 20000)
       {
+        return 0;
       }
-      command[i] = Serial3.read();
-      i++;
     }
-    return i;
+
+    for ( uint8_t i = 1; i <= 10; i++)
+    {
+      command[i] = Serial3.read();
+    }
+    if (command[10] == '&')
+      return 1;
   }
   return 0;
 }

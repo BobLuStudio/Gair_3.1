@@ -71,6 +71,9 @@
     <None Include="Gair_3.1.ino">
       <FileType>CppCode</FileType>
     </None>
+    <None Include="GPS.ino">
+      <FileType>CppCode</FileType>
+    </None>
     <None Include="motor.ino">
       <FileType>CppCode</FileType>
     </None>
@@ -78,6 +81,9 @@
       <FileType>CppCode</FileType>
     </None>
     <None Include="remote.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Report.ino">
       <FileType>CppCode</FileType>
     </None>
     <None Include="robots.ino">

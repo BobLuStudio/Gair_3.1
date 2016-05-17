@@ -13,7 +13,7 @@
 #define keepMode 1
 #define stopMode 0
 
-extern struct Datas
+struct Datas
 {
  float rstate[3], ustate[3];
  unsigned _int8 tpower=0, mode=0;
@@ -21,10 +21,10 @@ extern struct Datas
  bool remoteSignal,UAVSignal,commandCenterSignal;
 };
 
-comPort Serial = comPort(0);
+comPort Serial = comPort(4);
 
 
-unsigned _int8 receiveCommandFromRemote(char* command)
+unsigned _int8 receiveCommandFromCenter(char* command)
 {
 	command[0] =Serial.read();
 	for (unsigned _int8 i = 0; command[0] != '$'&&i <= 20; i++)
@@ -33,11 +33,13 @@ unsigned _int8 receiveCommandFromRemote(char* command)
 		}
 		if (command[0] == '$')
 		{
+			unsigned _int8 checkByte = 0;
 			for (unsigned _int8 i = 1; i <= 10;i++)
 			{
 				command[i] = Serial.read();
+				checkByte ^= command[i];
 			}
-			if (command[10] == '&')return 11;
+			if (command[10] == '&'&&checkByte == command[10])return 11;
 		}
 		return 0;
 }
@@ -60,9 +62,9 @@ void decodeMode(unsigned _int8 code, bool* modeSwitch)
 }
 bool getData(Datas &data)
 {
-	char commandFromRemote[12]; 
+	char commandFromRemote[11]; 
 	unsigned _int8 commandlength = 0;
-	commandlength = receiveCommandFromRemote(commandFromRemote);
+	commandlength = receiveCommandFromCenter(commandFromRemote);
 
 	if (commandlength == 11)
 	{
@@ -71,8 +73,6 @@ bool getData(Datas &data)
 		float rstateYTest = floatStructor(4, commandFromRemote);
 		float rstateZTest = floatStructor(6, commandFromRemote);
 		unsigned _int8 rtpowerTest = (unsigned _int8)commandFromRemote[8];
-		if ((unsigned _int8)(rstateXTest + rstateYTest + rstateZTest + rtpowerTest + modeTest) == (unsigned _int8)commandFromRemote[9])
-		{
 			if (rtpowerTest != 101)
 			{
 				data.rstate[Xaxis] = rstateXTest;
@@ -102,7 +102,7 @@ bool getData(Datas &data)
 					data.UAVSignal = 0;
 					*/
 			}
-		}
+		
 		return 1;
 	}
 	else

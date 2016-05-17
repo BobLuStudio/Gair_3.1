@@ -27,7 +27,7 @@ void setup()
 }
 void loop()
 {
-	update();
+	updateModes();
 	sendCommand();
   /*
     if(Serial.available())
@@ -44,7 +44,7 @@ void loop()
   */
 }
 
-void update()
+void updateModes()
 {
 
 	tpower = potentiometer(); //get the total power from potentiometer
@@ -73,16 +73,23 @@ void sendCommand()
     if (mode1)mode |= 1; //stop
 	else
 		mode &= ~(1);
-  
-  uint8_t numofcommand = (uint8_t)(mode + statex + statey + statez + tpower);
 
+  char commandString[8];
+  commandString[0]=(char)mode;
+  floatSplitter(&commandString[1], statex);
+  floatSplitter(&commandString[3], statey);
+  floatSplitter(&commandString[5], statez);
+  commandString[7]=(char)tpower;
+
+  
   printOut('$');//0
-  printOut((char)mode);//1
-  transmiteFloat(statex);//2,3
-  transmiteFloat(statey);//4,5
-  transmiteFloat(statez);//6,7
-  printOut((char)(tpower));//8
-  printOut((char)numofcommand);//9
+  uint8_t checkByte=0;
+  for(uint8_t i=0;i<8;i++)//8 bytes
+  {
+    checkByte^=commandString[i];
+    printOut(commandString[i]);
+  }
+  printOut((char)checkByte);//9
   printOut('&');//10
 
 }
@@ -92,18 +99,10 @@ void printOut(char rsc)
   Serial2.print(rsc);//U can add some encryption algorithm here
 }
 
-void transmiteFloat(float rsc)
-{
-  char elements[2];
-  floatSplitter(elements, rsc);
-  printOut(elements[0]);
-  printOut(elements[1]);
-}
-
 void floatSplitter(char elements[2], float rsc)
 {
   int16_t rscInt = rsc * 100;
-  elements[0] = (char)((rscInt << 8) >> 8);
-  elements[1] = (char)(rscInt >> 8);
+  elements[0] = (char)rscInt;
+  elements[1] = (char)*((uint8_t*)(&rscInt)+1);
 }
 

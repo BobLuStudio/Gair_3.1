@@ -19,9 +19,9 @@ int mtime = 0, prevmtime, dmtime;
 #define PIDy 1
 #define PIDz 2
 
-#define xAxis 0
-#define yAxis 1
-#define zAxis 2
+#define Xaxis 0
+#define Yaxis 1
+#define Zaxis 2
 
 #define landMode 3
 #define takeOffMode 2
@@ -29,7 +29,6 @@ int mtime = 0, prevmtime, dmtime;
 #define stopMode 0
 
 int motorPins[4];
-
 int takeoffpower = 0, landpower = 0;
 float avd = 0; //to store average distance
 float Kpd = 0.2, Kid = 0.07, Kdd = 0.07;//vertical PID
@@ -38,6 +37,8 @@ unsigned int dtimed = 0, btimed = 0;//dtimed:difference of time;btimed:before ti
 
 float ustate[3] = {0, 0, 0}; //state of uav{x,y,z}
 float rstate[3] = {0, 0, 0}; //remote data{x,y,z}
+uint16_t reportIndex = 0;
+uint8_t mode;
 float fpower, rpower, lpower, bpower, tpower = 0; //power of every moto to apply
 int dotlocation;//to judge where the dot is in order to analyze date form state sensor
 int sensorx = 0, sensory = 0; //to correct state sensor data
@@ -94,9 +95,10 @@ void setup()
   rpower = 100;
   applypowers();
   delay(3000);
-
-  Serial3.begin(57600);  //rest the serial port
-  Serial1.begin(57600);
+  //rest the serial port
+  Serial3.begin(57600);  //remote controller
+  Serial2.begin(57600);  //
+  Serial1.begin(57600);  //motion sensor
 
   state();  //get the first state data
 
@@ -151,7 +153,7 @@ void loop()
     applypowers();
     fromremote();
   }
-  while(modes[landMode]||count>50000)
+  while (modes[landMode] || count > 50000)
   {
     landrobot();
     fromremote();
@@ -162,19 +164,6 @@ void loop()
     fromremote();
   }
   realizestate();
-
-  /*
-    measuredistance++;//count the time to measuredistance
-    if(measuredistance==5)
-    {
-    averagedistance();
-    measuredistance=0;
-    while(avd<50)
-    {
-    keeprobot();
-    fromremote();//get expect state data(state of remote)(to get tpower here)
-    }
-    }*/
 }
 
 

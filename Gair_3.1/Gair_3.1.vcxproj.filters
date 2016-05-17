@@ -21,6 +21,8 @@
     <None Include="remote.ino" />
     <None Include="robots.ino" />
     <None Include="sensors.ino" />
+    <None Include="GPS.ino" />
+    <None Include="Report.ino" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.Gair_3.1.vsarduino.h">

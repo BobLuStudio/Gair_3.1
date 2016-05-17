@@ -83,7 +83,9 @@ extern "C" void __cxa_pure_virtual() {;}
 #define portInputRegister(P)
 #define portModeRegister(P)
 #include <Gair_3.1.ino>
+#include <GPS.ino>
 #include <PID.ino>
+#include <Report.ino>
 #include <motor.ino>
 #include <remote.ino>
 #include <robots.ino>

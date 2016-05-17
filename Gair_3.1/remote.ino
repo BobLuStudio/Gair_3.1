@@ -4,19 +4,19 @@ bool fromremote()
   char commandFromRemote[11];
   if (receiveCommandFromRemote(commandFromRemote))
   {
-    uint8_t modeTest = (uint8_t)commandFromRemote[1];
+    mode = (uint8_t)commandFromRemote[1];
     float rstateXTest = floatStructor(2, commandFromRemote);
     float rstateYTest = floatStructor(4, commandFromRemote);
     float rstateZTest = floatStructor(6, commandFromRemote);
     uint8_t rtpowerTest = (uint8_t)commandFromRemote[8];
 
-    if ((uint8_t)(rstateXTest + rstateYTest + rstateZTest + rtpowerTest + modeTest) == (uint8_t)commandFromRemote[9])
+    if ((uint8_t)(rstateXTest + rstateYTest + rstateZTest + rtpowerTest + mode) == (uint8_t)commandFromRemote[9])
     {
-      rstate[xAxis] = rstateXTest;
-      rstate[yAxis] = rstateYTest;
-      rstate[xAxis] = rstateZTest;
+      rstate[Xaxis] = rstateXTest;
+      rstate[Yaxis] = rstateYTest;
+      rstate[Xaxis] = rstateZTest;
       tpower = rtpowerTest;
-      decodeMode(modeTest, modes);
+      decodeMode(mode, modes);
     }
     return 1;
   }
@@ -72,7 +72,8 @@ float floatStructor(int beginNumber, char command[12]) //recive the data begin s
 void decodeMode(uint8_t code, bool modeSwitch[4])
 {
   for (uint8_t i = 0; i <= 3; i++)
-  {
-    modeSwitch[i] = (code << (8 - i)) >> 8;
+ {
+    modeSwitch[i] = (bool)((code & (1<<i))>>i);
   }
 }
+

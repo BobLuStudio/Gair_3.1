@@ -6,25 +6,16 @@ bool fromremote()
     char commandFromRemote[11];
     if (receiveCommandFromRemote(commandFromRemote))
     {
-      uint8_t modeTest = (uint8_t)commandFromRemote[1];
-      float rstateXTest = floatStructor(2, commandFromRemote);
-      float rstateYTest = floatStructor(4, commandFromRemote);
-      float rstateZTest = floatStructor(6, commandFromRemote);
-      uint8_t rtpowerTest = (uint8_t)commandFromRemote[8];
-
-      if ((uint8_t)(rstateXTest + rstateYTest + rstateZTest + rtpowerTest + modeTest) == (uint8_t)commandFromRemote[9])
-      {
-        rstate[Xaxis] = rstateXTest;
-        rstate[Yaxis] = rstateYTest;
-        rstate[Zaxis] = rstateZTest;
-        rtpower = rtpowerTest;
-        mode = modeTest;
-        decodeMode(mode, modes);
-      }
+      mode = (uint8_t)commandFromRemote[1];
+      rstate[Xaxis] = floatStructor(2, commandFromRemote);
+      rstate[Yaxis] = floatStructor(4, commandFromRemote);
+      rstate[Zaxis] = floatStructor(6, commandFromRemote);
+      rtpower = (uint8_t)commandFromRemote[8];
+      decodeMode(mode, modes);
       return 1;
     }
   }
-    return 0;
+  return 0;
 }
 
 bool fromUAV()
@@ -58,11 +49,13 @@ bool receiveCommandFromRemote(char command[11])
       }
     }
 
+    uint8_t checkByte = 0;
     for ( uint8_t i = 1; i <= 10; i++)
     {
       command[i] = Serial3.read();
+      checkByte ^= command[i];
     }
-    if (command[10] == '&')
+    if (command[10] == '&' && checkByte == command[10])
       return 1;
   }
   return 0;
@@ -82,8 +75,8 @@ float floatStructor(int beginNumber, char command[12]) //recive the data begin s
 
 void decodeMode(uint8_t code, bool modeSwitch[4])
 {
- for (uint8_t i = 0; i <= 3; i++)
+  for (uint8_t i = 0; i <= 3; i++)
   {
-    modeSwitch[i] = (bool)((code & (1<<i))>>i);
+    modeSwitch[i] = (bool)((code & (1 << i)) >> i);
   }
 }

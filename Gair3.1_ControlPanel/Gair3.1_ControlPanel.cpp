@@ -64,6 +64,26 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 						return nRetCode;
 					}
 				}
+				else
+				{
+					char temp[10]="No Signal";
+					CvFont UIMessageFont;
+					cvInitFont(&UIMessageFont, CV_FONT_HERSHEY_SIMPLEX, 2, 2, 0, 2);
+
+					Mat noCam(screen.width, screen.height, CV_8UC3, Scalar(255, 0, 0));
+
+					cvPutText(&IplImage(noCam), temp, cvPoint(screen.height/3, screen.width/2), &UIMessageFont, textColor);
+					resize(noCam, UI, screen);
+					imshow("Gair UI-windows 3.2", UI);
+					if (waitKey(100) == 27)
+					{
+						exitThread = 1;
+						cam.~Camera();
+						Serial.~comPort();
+						return nRetCode;
+					}
+					Camera cam = Camera(CamraId);
+				}
 			}
 		}
 	}
